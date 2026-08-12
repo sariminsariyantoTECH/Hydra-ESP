@@ -170,20 +170,25 @@
   </div>
 
   <script>
-    let seconds = 10;
-    const timerEl = document.getElementById('timer');
+    // Memastikan skrip berjalan persis saat halaman dirender penuh
+    window.onload = function() {
+      let seconds = 10;
+      const timerEl = document.getElementById('timer');
 
-    timerEl.textContent = 'Checking connection... ' + seconds + 's';
+      // Set teks awal secara dinamis
+      timerEl.textContent = `Checking connection... ${seconds}s`;
 
-    const interval = setInterval(function() {
-      seconds--;
-      timerEl.textContent = 'Checking connection... ' + Math.max(seconds, 0) + 's';
+      const interval = setInterval(function() {
+        seconds--;
+        timerEl.textContent = `Checking connection... ${seconds}s`;
 
-      if (seconds <= 0) {
-        clearInterval(interval);
-        window.location.href = 'wrong-password.html';
-      }
-    }, 1000);
+        if (seconds <= 0) {
+          clearInterval(interval);
+          // Menggunakan replace agar halaman loading ini tidak tersimpan di riwayat tombol "Back"
+          window.location.replace('wrong-password.html');
+        }
+      }, 1000);
+    };
   </script>
 </body>
 </html>
